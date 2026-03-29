@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PocketCoder · Grille tarifaire</title>
+  <!-- Font Awesome 6 (free) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background: #f4f7fc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.5rem;
+    }
+
+    .container {
+      max-width: 1300px;
+      width: 100%;
+    }
+
+    /* header style inspiré du profil pocket.coder */
+    .brand-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2.5rem;
+      background: white;
+      padding: 1.2rem 2rem;
+      border-radius: 40px;
+      box-shadow: 0 10px 25px -8px rgba(0,0,0,0.1);
+      border: 1px solid rgba(0,0,0,0.03);
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo-icon {
+      background: #1E2C3A;  /* dark from pocket.coder vibe */
+      width: 50px;
+      height: 50px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 700;
+      color: #F5B041;       /* accent or */
+      box-shadow: 0 6px 12px rgba(0,0,0,0.06);
+    }
+
+    .logo-text h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #1E2C3A;
+    }
+    .logo-text span {
+      color: #F5B041;
+      font-weight: 300;
+      font-size: 1rem;
+      display: block;
+      line-height: 1.2;
+    }
+
+    .badge-mention {
+      background: #eef2f5;
+      padding: 0.5rem 1.5rem;
+      border-radius: 60px;
+      font-size: 0.9rem;
+      color: #1e2c3a;
+      border: 1px dashed #F5B041;
+    }
+    .badge-mention i {
+      color: #F5B041;
+      margin-right: 6px;
+    }
+
+    /* message coming soon + badge */
+    .coming-soon-strip {
+      background: linear-gradient(98deg, #1E2C3A 0%, #2a3c4d 100%);
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 60px;
+      margin-bottom: 2.8rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+    .soon-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .soon-left i {
+      font-size: 2rem;
+      color: #F5B041;
+    }
+    .soon-left h3 {
+      font-weight: 600;
+      font-size: 1.4rem;
+    }
+    .soon-left p {
+      opacity: 0.9;
+      font-size: 0.95rem;
+    }
+    .days-badge {
+      background: #F5B041;
+      color: #1E2C3A;
+      padding: 0.5rem 1.5rem;
+      border-radius: 60px;
+      font-weight: 800;
+      font-size: 1.5rem;
+      letter-spacing: 2px;
+    }
+
+    /* switch / selector */
+    .pricing-toggle {
+      display: flex;
+      justify-content: center;
+      margin: 30px 0 20px;
+    }
+    .toggle-btn {
+      background: white;
+      border-radius: 60px;
+      padding: 6px;
+      display: inline-flex;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+      border: 1px solid #e9ecf0;
+    }
+    .toggle-option {
+      padding: 0.8rem 2.2rem;
+      border-radius: 40px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      color: #3a4a5a;
+    }
+    .toggle-option.active {
+      background: #1E2C3A;
+      color: white;
+      box-shadow: 0 4px 10px rgba(30,44,58,0.2);
+    }
+
+    /* grille */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+      margin-top: 30px;
+    }
+
+    .pricing-card {
+      background: white;
+      border-radius: 36px;
+      padding: 2rem 1.8rem;
+      box-shadow: 0 20px 30px -12px rgba(0,20,30,0.15);
+      transition: all 0.25s ease;
+      border: 1px solid rgba(245,176,65,0.1);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+    .pricing-card:hover {
+      transform: translateY(-8px);
+      border-color: #F5B041;
+      box-shadow: 0 28px 36px -14px rgba(245,176,65,0.25);
+    }
+    .premium-tag {
+      position: absolute;
+      top: 18px;
+      right: -32px;
+      background: #F5B041;
+      color: #1E2C3A;
+      padding: 8px 38px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      transform: rotate(45deg);
+      letter-spacing: 1px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+
+    .card-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #1E2C3A;
+    }
+    .card-sub {
+      color: #6b7b8b;
+      font-size: 0.95rem;
+      margin-bottom: 1.8rem;
+      min-height: 42px;
+    }
+    .price-box {
+      margin: 15px 0 20px;
+    }
+    .price-main {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: #1E2C3A;
+      line-height: 1;
+    }
+    .price-main small {
+      font-size: 1rem;
+      font-weight: 500;
+      color: #7f8d9c;
+    }
+    .price-desc {
+      color: #F5B041;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-top: 5px;
+      letter-spacing: 0.3px;
+    }
+
+    .features-list {
+      list-style: none;
+      margin: 25px 0 20px;
+      flex: 1;
+    }
+    .features-list li {
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.98rem;
+      color: #2e3f4e;
+    }
+    .features-list i.fa-check-circle {
+      color: #F5B041;
+      width: 20px;
+      font-size: 1.1rem;
+    }
+    .features-list i.fa-plus-circle {
+      color: #9bb7d4;
+      font-size: 0.85rem;
+      width: 20px;
+    }
+
+    .card-btn {
+      background: transparent;
+      border: 2px solid #1E2C3A;
+      color: #1E2C3A;
+      border-radius: 60px;
+      padding: 1rem;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-top: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .card-btn:hover {
+      background: #1E2C3A;
+      color: white;
+      border-color: #1E2C3A;
+    }
+    .card-btn.premium {
+      background: #F5B041;
+      border: 2px solid #F5B041;
+      color: #1E2C3A;
+    }
+    .card-btn.premium:hover {
+      background: #e09c30;
+      border-color: #e09c30;
+    }
+
+    /* section options & maintenance */
+    .options-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 25px;
+      margin-top: 50px;
+      margin-bottom: 30px;
+    }
+    .options-card {
+      background: white;
+      border-radius: 28px;
+      padding: 2rem;
+      flex: 1 1 260px;
+      box-shadow: 0 12px 24px -16px rgba(30,44,58,0.2);
+      border: 1px solid rgba(245,176,65,0.2);
+    }
+    .options-card h3 {
+      color: #1E2C3A;
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .options-card h3 i {
+      color: #F5B041;
+      margin-right: 8px;
+    }
+    .option-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 15px;
+      margin-top: 20px;
+    }
+    .chip {
+      background: #eef2f6;
+      border-radius: 60px;
+      padding: 0.4rem 1.2rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #1E2C3A;
+    }
+    .chip strong {
+      color: #1E2C3A;
+      background: #F5B04130;
+      padding: 2px 8px;
+      border-radius: 60px;
+      margin-left: 6px;
+    }
+    .maintenance-price {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1E2C3A;
+      margin-top: 15px;
+    }
+    .maintenance-price small {
+      font-size: 1rem;
+      color: #6f7d8c;
+      font-weight: 400;
+    }
+
+    .footer-note {
+      background: #1E2C3A;
+      color: white;
+      padding: 2rem;
+      border-radius: 40px;
+      margin-top: 50px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .footer-note p {
+      font-size: 1.2rem;
+      font-weight: 400;
+    }
+    .footer-note p i {
+      color: #F5B041;
+      margin-right: 8px;
+    }
+    .btn-contact {
+      background: #F5B041;
+      border: none;
+      padding: 1rem 2.5rem;
+      border-radius: 60px;
+      font-weight: 700;
+      color: #1E2C3A;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 6px 14px rgba(245,176,65,0.4);
+      border: 2px solid transparent;
+    }
+    .btn-contact:hover {
+      background: white;
+      color: #1E2C3A;
+      border: 2px solid #F5B041;
+    }
+
+    hr {
+      margin: 30px 0 10px;
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+    small.disclaimer {
+      color: #7c8b9a;
+      font-size: 0.85rem;
+      display: block;
+      text-align: center;
+    }
+
+    /* simulateur rdv rapide */
+    .appointment-banner {
+      background: #ffffffdd;
+      backdrop-filter: blur(6px);
+      border-radius: 100px;
+      padding: 0.3rem 0.3rem 0.3rem 2rem;
+      display: inline-flex;
+      align-items: center;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      margin: 30px auto 0;
+      border: 1px solid #F5B04140;
+    }
+    .appointment-banner input {
+      border: none;
+      background: #f1f5f9;
+      padding: 0.8rem 1.5rem;
+      border-radius: 60px;
+      width: 220px;
+      margin: 0 10px;
+      outline: none;
+    }
+    .appointment-banner button {
+      background: #F5B041;
+      border: none;
+      border-radius: 60px;
+      padding: 0.8rem 2rem;
+      font-weight: 600;
+      color: #1E2C3A;
+      cursor: pointer;
+    }
+
+  </style>
+</head>
+<body>
+<div class="container">
+  
+  <!-- header personnalisé pocket.coder -->
+  <div class="brand-header">
+    <div class="logo-area">
+      <div class="logo-icon">PC</div>
+      <div class="logo-text">
+        <h1>pocket.coder <span>by @pocket.coder</span></h1>
+      </div>
+    </div>
+    <div class="badge-mention">
+      <i class="fas fa-map-marker-alt"></i> Maroc · Freelance · IA & automatisation
+    </div>
+  </div>
+
+  <!-- coming soon strip (from profile) -->
+  <div class="coming-soon-strip">
+    <div class="soon-left">
+      <i class="fas fa-rocket"></i>
+      <div>
+        <h3>COMING SOON · Projet freelancers</h3>
+        <p>Pour tous les pros · Site Prop Experts / Chatbot / RDV automatique</p>
+      </div>
+    </div>
+    <div class="days-badge">4 JOURS</div>
+  </div>
+
+  <!-- phrase d'accroche IA / dev -->
+  <div style="text-align: center; margin-bottom: 20px;">
+    <span style="background: #e0e9f2; padding: 0.5rem 2rem; border-radius: 60px; color: #1E2C3A; font-weight: 500;"><i class="fas fa-robot" style="color: #F5B041;"></i> IA UNLOCK THE TRUE DEVELOPER POTENTIAL · BEST AI FOR CODING</span>
+  </div>
+
+  <!-- pricing toggle Maroc / réel -->
+  <div class="pricing-toggle">
+    <div class="toggle-btn">
+      <span class="toggle-option active" id="toggle-mad">🇲🇦 Prix MAD (DH)</span>
+      <span class="toggle-option" id="toggle-eur">🇪🇺 Euro (€) ~ indicatif</span>
+    </div>
+  </div>
+
+  <!-- grille principale 6 offres + détail -->
+  <div class="pricing-grid" id="pricing-grid">
+    <!-- les cartes seront générées en JS avec les prix MAD/EUR -->
+  </div>
+
+  <!-- options + maintenance -->
+  <div class="options-row">
+    <div class="options-card">
+      <h3><i class="fas fa-puzzle-piece"></i> Options à la carte</h3>
+      <div class="option-items" id="options-list">
+        <!-- injectées via JS -->
+      </div>
+    </div>
+    <div class="options-card">
+      <h3><i class="fas fa-sync-alt"></i> Maintenance mensuelle</h3>
+      <div class="maintenance-price" id="maintenance-price">400 <small>MAD</small> / mois</div>
+      <p style="color:#3e5568; margin: 10px 0;">Corrections, mises à jour, support prioritaire.</p>
+      <div class="option-items">
+        <span class="chip">forfait 200–800 MAD</span>
+        <span class="chip">ou 20–75 €</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- mini formulaire RDV + email (factice mais belle présentation) -->
+  <div style="display: flex; justify-content: center;">
+    <div class="appointment-banner">
+      <i class="fas fa-calendar-check" style="color: #F5B041; font-size: 1.5rem;"></i>
+      <span style="margin:0 10px; font-weight:500;">RDV en ligne :</span>
+      <input type="email" placeholder="Votre email" value="client@exemple.ma">
+      <button id="simulateRdv"><i class="fas fa-paper-plane"></i> Envoyer</button>
+    </div>
+  </div>
+
+  <!-- footer contact + message -->
+  <div class="footer-note">
+    <p><i class="fas fa-star"></i> Tous les projets incluent design responsive, JS moderne, intégration WhatsApp / email possible.</p>
+    <button class="btn-contact" id="contactBtn"><i class="fas fa-comment"></i> Envoyer un message</button>
+  </div>
+  <hr>
+  <small class="disclaimer">* Prix donnés à titre indicatif selon le marché marocain freelance. Devis personnalisé après échange. 70% des clients choisissent l'offre intermédiaire.</small>
+</div>
+
+<script>
+  (function() {
+    // données brutes : chaque offre avec titre, sous-titre, features, option tag "premium"
+    const plans = [
+      { title: "Site vitrine simple", subtitle: "3-5 pages · contact · mobile", 
+        features: ["Accueil, services, contact", "Responsive mobile", "Formulaire de contact", "Intégration WhatsApp basique"],
+        priceMAD: "2500–4000", priceEUR: "230–370", premium: false },
+      { title: "Site vitrine pro", subtitle: "5-8 pages · design + animations",
+        features: ["Design travaillé", "Animations JS", "Formulaire + whatsapp", "Optimisation mobile"],
+        priceMAD: "4000–7000", priceEUR: "370–650", premium: false },
+      { title: "Site premium (IA)", subtitle: "chatbot · RDV · email auto",
+        features: ["Chatbot IA fonctionnel", "Prise de RDV connectée", "Emails automatisés", "Design premium & animations"],
+        priceMAD: "7000–12000", priceEUR: "650–1100", premium: true }, // premium tag
+      { title: "E‑commerce simple", subtitle: "catalogue · panier · admin",
+        features: ["Catalogue produits", "Panier & commandes", "Admin simple", "Paiement (config)"],
+        priceMAD: "8000–15000", priceEUR: "740–1380", premium: false },
+      { title: "Immobilier / catalogue", subtitle: "fiches biens · filtres",
+        features: ["Fiches biens + photos", "Filtres dynamiques", "Formulaire de contact", "Gestion simple"],
+        priceMAD: "7000–14000", priceEUR: "650–1300", premium: false },
+      { title: "Connecté API / CRM", subtitle: "synchronisation · API · dyn.",
+        features: ["Connexion API (ex: Apimo)", "Synchronisation données", "Affichage dynamique", "Interface sur mesure"],
+        priceMAD: "12000–25000", priceEUR: "1100–2300", premium: false }
+    ];
+
+    const optionsList = [
+      { name: "Chatbot IA", price: "1500–4000 MAD" },
+      { name: "Système RDV", price: "800–2000 MAD" },
+      { name: "Blog", price: "500–1500 MAD" },
+      { name: "SEO de base", price: "1000–3000 MAD" }
+    ];
+
+    let currentCurrency = 'MAD'; // 'MAD' ou 'EUR'
+
+    const grid = document.getElementById('pricing-grid');
+    const optionsContainer = document.getElementById('options-list');
+    const maintenanceSpan = document.getElementById('maintenance-price');
+
+    function renderPrices() {
+      // render cards
+      let htmlCards = '';
+      plans.forEach(p => {
+        const priceDisplay = (currentCurrency === 'MAD') ? p.priceMAD + ' MAD' : p.priceEUR + ' €';
+        // petite indication si MAD: "DH"
+        const currencySymbol = (currentCurrency === 'MAD') ? 'DH' : '€';
+        const mainPrice = (currentCurrency === 'MAD') ? p.priceMAD : p.priceEUR;
+        const premiumClass = p.premium ? 'premium-tag' : '';
+        const premiumText = p.premium ? '⭐ IA & automation' : '';
+        const btnClass = p.premium ? 'card-btn premium' : 'card-btn';
+        htmlCards += `
+          <div class="pricing-card">
+            ${p.premium ? '<div class="premium-tag">' + premiumText + '</div>' : ''}
+            <div class="card-title">${p.title}</div>
+            <div class="card-sub">${p.subtitle}</div>
+            <div class="price-box">
+              <span class="price-main">${mainPrice} <small>${currencySymbol}</small></span>
+              <div class="price-desc">prix indicatif</div>
+            </div>
+            <ul class="features-list">
+              ${p.features.map(f => `<li><i class="fas fa-check-circle"></i> ${f}</li>`).join('')}
+            </ul>
+            <button class="${btnClass}" onclick="alert('Demande envoyée pour ${p.title} (simulation)')"><i class="fas fa-calendar-plus"></i> Demander un devis</button>
+          </div>
+        `;
+      });
+      grid.innerHTML = htmlCards;
+
+      // render options chips avec prix mis à jour
+      let optionsHtml = '';
+      optionsList.forEach(opt => {
+        let pricePart = opt.price;
+        if (currentCurrency === 'EUR') {
+          // conversion simpliste (indicative)
+          pricePart = opt.price.replace('MAD', '€').replace(/[0-9–]+/g, (match) => {
+            if (match.includes('–')) {
+              let parts = match.split('–');
+              let low = Math.round(parseInt(parts[0]) / 10.8);
+              let high = Math.round(parseInt(parts[1]) / 10.8);
+              return low + '–' + high;
+            } else {
+              return Math.round(parseInt(match) / 10.8);
+            }
+          });
+        } else {
+          pricePart = opt.price; // on garde original
+        }
+        optionsHtml += `<span class="chip">${opt.name} <strong>${pricePart}</strong></span>`;
+      });
+      optionsContainer.innerHTML = optionsHtml;
+
+      // maintenance
+      if (currentCurrency === 'MAD') {
+        maintenanceSpan.innerHTML = '200–800 <small>MAD</small> / mois';
+      } else {
+        maintenanceSpan.innerHTML = '18–75 <small>€</small> / mois';
+      }
+    }
+
+    // toggle events
+    document.getElementById('toggle-mad').addEventListener('click', function() {
+      if (currentCurrency === 'MAD') return;
+      this.classList.add('active');
+      document.getElementById('toggle-eur').classList.remove('active');
+      currentCurrency = 'MAD';
+      renderPrices();
+    });
+    document.getElementById('toggle-eur').addEventListener('click', function() {
+      if (currentCurrency === 'EUR') return;
+      this.classList.add('active');
+      document.getElementById('toggle-mad').classList.remove('active');
+      currentCurrency = 'EUR';
+      renderPrices();
+    });
+
+    // simulateur rdv (email)
+    document.getElementById('simulateRdv').addEventListener('click', function() {
+      const email = document.querySelector('.appointment-banner input').value;
+      if (email.includes('@')) {
+        alert(`📅 Demande de RDV simulée pour ${email} (un email automatique serait envoyé)`);
+      } else {
+        alert('✉️ Veuillez entrer un email valide');
+      }
+    });
+
+    // contact button
+    document.getElementById('contactBtn').addEventListener('click', function() {
+      alert('📨 Message envoyé à pocket.coder (simulation) · Réponse rapide sous 24h');
+    });
+
+    // initial render
+    renderPrices();
+  })();
+</script>
+
+<!-- petit plus : au cas où l'utilisateur veut cliquer sur "Envoyer un message" via le footer -->
+</body>
+</html>
