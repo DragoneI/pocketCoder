@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="logo.svg" alt="pocketCoder Logo" width="50%"/>
+  <img src="logo.svg" alt="pocketCoder Logo" width="30%"/>
 </p>
 
 🧑‍💻  Pocket Coder — Portfolio Website
